@@ -40,7 +40,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void addBookToCart(AddBookToCartRequest request) {
+    public CartItemDTO addBookToCart(AddBookToCartRequest request) {
         Optional<Book> book = bookRepository.findById(request.getBookId());
         if (book.isEmpty()){
             throw new BookNotFoundException(request.getBookId());
@@ -52,15 +52,31 @@ public class CartServiceImpl implements CartService {
         if (foundItem.isPresent()){
             CartItem itemToModify = foundItem.get();
             itemToModify.setQuantity(itemToModify.getQuantity() + request.getQuantity());
-            cartItemRepository.save(itemToModify);
+            itemToModify = cartItemRepository.save(itemToModify);
+            return CartItemMapper.toDto(itemToModify);
         } else {
             CartItem newItem = new CartItem();
             newItem.setBook(book.get());
             newItem.setCart(cart);
             newItem.setQuantity(request.getQuantity());
-            cartItemRepository.save(newItem);
+            newItem = cartItemRepository.save(newItem);
+            return CartItemMapper.toDto(newItem);
         }
     }
+
+    public void removeBookFromCart(Long bookId, String username){
+        Optional<Cart> cart = getCartByUsername(username);
+        if (cart.isEmpty()){
+            return;
+        }
+        Optional<Book> book = bookRepository.findById(bookId);
+        if (book.isEmpty()){
+            throw new BookNotFoundException(bookId);
+        }
+        Optional<CartItem> cartItem = cartItemRepository.findByCartAndBook(cart.get(), book.get());
+        cartItem.ifPresent(cartItemRepository::delete);
+    }
+
     private Optional<Cart> getCartByUsername(String username){
         User user = userRepository.findUserByUsername(username);
         return cartRepository.findByUser(user);

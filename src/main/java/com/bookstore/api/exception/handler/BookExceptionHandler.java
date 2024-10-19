@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class BookExceptionHandler {
     @ExceptionHandler(BookNotFoundException.class)
     public ResponseEntity<String> handleBookNotFoundException(BookNotFoundException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

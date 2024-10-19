@@ -19,15 +19,21 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping
-    public ResponseEntity<List<CartItemDTO>>getUserCartItems(Principal principal){
+    public ResponseEntity<List<CartItemDTO>> getUserCartItems(Principal principal){
         List<CartItemDTO> cartItems = cartService.getCartItems(principal.getName());
         return new ResponseEntity<>(cartItems, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<String>addBookToCart(@Valid @RequestBody AddBookToCartRequest request, Principal principal){
+    public ResponseEntity<CartItemDTO> addBookToCart(@Valid @RequestBody AddBookToCartRequest request, Principal principal){
         request.setUsername(principal.getName());
-        cartService.addBookToCart(request);
-        return ResponseEntity.ok("Book added successfully!");
+        CartItemDTO cartItem = cartService.addBookToCart(request);
+        return new ResponseEntity<>(cartItem, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/book/{bookId}")
+    public ResponseEntity<String> removeBookFromCart(@PathVariable("bookId") Long bookId, Principal principal){
+        cartService.removeBookFromCart(bookId, principal.getName());
+        return ResponseEntity.ok("Book removed from cart");
     }
 }
