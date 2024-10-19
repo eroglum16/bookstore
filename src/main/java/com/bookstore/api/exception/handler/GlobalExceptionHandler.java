@@ -1,4 +1,4 @@
-package com.bookstore.api.exception;
+package com.bookstore.api.exception.handler;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
