@@ -20,6 +20,6 @@ public class BookController {
     @GetMapping
     public ResponseEntity<List<BookDTO>>getAllBooks(){
         List<BookDTO> books = bookService.getAll();
-        return new ResponseEntity<List<BookDTO>>(books, HttpStatus.OK);
+        return new ResponseEntity<>(books, HttpStatus.OK);
     }
 }
