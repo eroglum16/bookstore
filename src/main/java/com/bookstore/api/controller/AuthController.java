@@ -3,6 +3,7 @@ package com.bookstore.api.controller;
 import com.bookstore.api.model.dto.UserDTO;
 import com.bookstore.api.service.UserService;
 import com.bookstore.api.service.impl.UserServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +17,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserDTO userDTO){
+    public ResponseEntity<String> registerUser(@Valid @RequestBody UserDTO userDTO){
         userService.register(userDTO);
         return ResponseEntity.status(201).body("User registered succesfully!");
     }
