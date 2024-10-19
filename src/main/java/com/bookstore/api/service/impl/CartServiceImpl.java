@@ -3,6 +3,7 @@ package com.bookstore.api.service.impl;
 import com.bookstore.api.exception.BookNotFoundException;
 import com.bookstore.api.model.dto.AddBookToCartRequest;
 import com.bookstore.api.model.dto.CartItemDTO;
+import com.bookstore.api.model.dto.ChangeQuantityInCartRequest;
 import com.bookstore.api.model.entity.Book;
 import com.bookstore.api.model.entity.Cart;
 import com.bookstore.api.model.entity.CartItem;
@@ -65,16 +66,28 @@ public class CartServiceImpl implements CartService {
     }
 
     public void removeBookFromCart(Long bookId, String username){
+        Optional<CartItem> cartItem = getCartItemByBookIdAndUsername(bookId, username);
+        cartItem.ifPresent(cartItemRepository::delete);
+    }
+
+    @Override
+    public void changeQuantityInCart(ChangeQuantityInCartRequest request) {
+        Optional<CartItem> optionalCartItem = getCartItemByBookIdAndUsername(request.getBookId(), request.getUsername());
+        if (optionalCartItem.isPresent()){
+            CartItem cartItem = optionalCartItem.get();
+            cartItem.setQuantity(request.getQuantity());
+            cartItemRepository.save(cartItem);
+        }
+    }
+
+    private Optional<CartItem> getCartItemByBookIdAndUsername(Long bookId, String username){
         Optional<Cart> cart = getCartByUsername(username);
         if (cart.isEmpty()){
-            return;
+            return Optional.empty();
         }
-        Optional<Book> book = bookRepository.findById(bookId);
-        if (book.isEmpty()){
-            throw new BookNotFoundException(bookId);
-        }
-        Optional<CartItem> cartItem = cartItemRepository.findByCartAndBook(cart.get(), book.get());
-        cartItem.ifPresent(cartItemRepository::delete);
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new BookNotFoundException(bookId));
+        return cartItemRepository.findByCartAndBook(cart.get(), book);
     }
 
     private Optional<Cart> getCartByUsername(String username){

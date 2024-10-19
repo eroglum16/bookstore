@@ -2,6 +2,7 @@ package com.bookstore.api.controller;
 
 import com.bookstore.api.model.dto.AddBookToCartRequest;
 import com.bookstore.api.model.dto.CartItemDTO;
+import com.bookstore.api.model.dto.ChangeQuantityInCartRequest;
 import com.bookstore.api.service.CartService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,5 +36,16 @@ public class CartController {
     public ResponseEntity<String> removeBookFromCart(@PathVariable("bookId") Long bookId, Principal principal){
         cartService.removeBookFromCart(bookId, principal.getName());
         return ResponseEntity.ok("Book removed from cart");
+    }
+
+    @PutMapping("/book/{bookId}")
+    public ResponseEntity<String> changeQuantityInCart(@PathVariable("bookId") Long bookId, @RequestParam Integer quantity, Principal principal){
+        ChangeQuantityInCartRequest request = ChangeQuantityInCartRequest.builder()
+                .username(principal.getName())
+                .bookId(bookId)
+                .quantity(quantity)
+                .build();
+        cartService.changeQuantityInCart(request);
+        return ResponseEntity.ok("Quantity changed in cart");
     }
 }

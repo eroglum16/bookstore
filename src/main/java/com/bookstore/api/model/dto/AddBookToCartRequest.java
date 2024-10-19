@@ -7,11 +7,11 @@ import lombok.Data;
 @Data
 public class AddBookToCartRequest {
     @NotNull
-    Long bookId;
+    private Long bookId;
 
     @NotNull
     @Min(1)
-    Integer quantity;
+    private Integer quantity;
 
-    String username;
+    private String username;
 }
