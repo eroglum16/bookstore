@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
 import java.security.Principal;
 
 @RestController
@@ -21,6 +22,6 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<String> createOrder(@Valid @RequestBody OrderRequest orderRequest, Principal principal){
         orderService.createOrder(principal.getName(), orderRequest.getAddress());
-        return ResponseEntity.ok("Order has been successfully created.");
+        return ResponseEntity.status(201).body("Order has been successfully created.");
     }
 }
