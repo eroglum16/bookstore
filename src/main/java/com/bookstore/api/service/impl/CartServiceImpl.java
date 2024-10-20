@@ -65,6 +65,7 @@ public class CartServiceImpl implements CartService {
         }
     }
 
+    @Override
     public void removeBookFromCart(Long bookId, String username){
         Optional<CartItem> cartItem = getCartItemByBookIdAndUsername(bookId, username);
         cartItem.ifPresent(cartItemRepository::delete);
@@ -80,6 +81,18 @@ public class CartServiceImpl implements CartService {
         }
     }
 
+    @Override
+    public Optional<Cart> getCartByUsername(String username){
+        User user = userRepository.findUserByUsername(username);
+        return cartRepository.findByUser(user);
+    }
+
+    @Override
+    public void emptyCart(String username){
+        Optional<Cart> cart = getCartByUsername(username);
+        cart.ifPresent(cartItemRepository::deleteByCart);
+    }
+
     private Optional<CartItem> getCartItemByBookIdAndUsername(Long bookId, String username){
         Optional<Cart> cart = getCartByUsername(username);
         if (cart.isEmpty()){
@@ -90,10 +103,6 @@ public class CartServiceImpl implements CartService {
         return cartItemRepository.findByCartAndBook(cart.get(), book);
     }
 
-    private Optional<Cart> getCartByUsername(String username){
-        User user = userRepository.findUserByUsername(username);
-        return cartRepository.findByUser(user);
-    }
     private Cart createEmptyCartByUsername(String username){
         User user = userRepository.findUserByUsername(username);
         Cart cart = new Cart();
