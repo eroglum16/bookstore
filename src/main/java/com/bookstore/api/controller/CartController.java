@@ -38,7 +38,7 @@ public class CartController {
         return ResponseEntity.ok("Book removed from cart");
     }
 
-    @PutMapping("/book/{bookId}")
+    @PatchMapping("/book/{bookId}")
     public ResponseEntity<String> changeQuantityInCart(@PathVariable("bookId") Long bookId, @RequestParam Integer quantity, Principal principal){
         ChangeQuantityInCartRequest request = ChangeQuantityInCartRequest.builder()
                 .username(principal.getName())
