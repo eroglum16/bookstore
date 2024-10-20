@@ -1,8 +1,10 @@
 package com.bookstore.api.service.impl;
 
 import com.bookstore.api.exception.CartNotFoundException;
+import com.bookstore.api.model.dto.OrderDTO;
 import com.bookstore.api.model.entity.*;
 import com.bookstore.api.model.mapper.CartItemToOrderItemMapper;
+import com.bookstore.api.model.mapper.OrderMapper;
 import com.bookstore.api.repository.CartItemRepository;
 import com.bookstore.api.repository.OrderItemRepository;
 import com.bookstore.api.repository.OrderRepository;
@@ -31,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public void createOrder(String username, String address) {
+    public OrderDTO createOrder(String username, String address) {
         Optional<Cart> cart = cartService.getCartByUsername(username);
         if (cart.isEmpty()){
             throw new CartNotFoundException("Cart not found for the current user");
@@ -57,7 +59,10 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
         orderItemRepository.saveAll(orderItems);
 
-        orderRepository.save(order);
+        Order saved = orderRepository.save(order);
         cartService.emptyCart(username);
+
+        saved.setOrderItems(orderItems);
+        return OrderMapper.toDto(saved);
     }
 }

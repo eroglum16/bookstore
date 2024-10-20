@@ -1,5 +1,7 @@
 package com.bookstore.api.service;
 
+import com.bookstore.api.model.dto.OrderDTO;
+
 public interface OrderService {
-    void createOrder(String username, String address);
+    OrderDTO createOrder(String username, String address);
 }
